@@ -1,6 +1,6 @@
 # Cloud Security & DevSecOps Lab — Build, Attack and Defend a Web App on AWS
 
-Integrated lab project of ITS Piemonte in collaboration with **aizoOn** — **Group 1**.
+Integrated lab project of ITS Piemonte in collaboration with **aizoOn** — **ByteLab (Group 1)**.
 
 This repository deploys a complete security lab on **Amazon Web Services (AWS)** using Infrastructure as Code. A deliberately vulnerable web application (**OWASP Juice Shop**) runs behind a **ModSecurity WAF** with the OWASP Core Rule Set, while a **Wazuh SIEM** collects the logs of every component and detects attacks. All Terraform and Ansible code is scanned with **Checkov** before deployment.
 
@@ -167,13 +167,13 @@ terraform destroy
 
 ---
 
-## Team — Group 1
+## Team — ByteLab (Group 1)
 
 **Cloud / DevOps** (Phase 1: infrastructure, automation, IaC security, costs)
 
 | Name | Area |
 | --- | --- |
-| Ngumo Esther Wanjiru | _to assign_ |
+| Ngumo Esther Wanjiru | Team leader — network, Terraform core, Checkov, integration |
 | Chemmam Farouq | _to assign_ |
 | Pironato Matteo | _to assign_ |
 
