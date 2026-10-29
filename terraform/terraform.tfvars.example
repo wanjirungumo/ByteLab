@@ -1,0 +1,7 @@
+# Copy to terraform.tfvars (ignored by Git) and fill in.
+# Find your public IP with: curl -s https://checkip.amazonaws.com
+admin_cidrs = [
+  "<esther-ip>/32",
+  "<farouq-ip>/32",
+  "<matteo-ip>/32",
+]

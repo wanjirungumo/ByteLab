@@ -1,0 +1,33 @@
+terraform scan results:
+
+Passed checks: 85, Failed checks: 8, Skipped checks: 0
+
+Check: CKV_AWS_394: "Ensure aws_availability_zones data source pins zone identity so its result set does not silently expand when AWS adds an Availability Zone"
+	FAILED for resource: module.network.aws_availability_zones.available
+	File: /network/main.tf:5-7
+	Calling File: /main.tf:1-9
+Check: CKV_AWS_260: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 80"
+	FAILED for resource: module.network.aws_vpc_security_group_ingress_rule.waf_http
+	File: /network/security_groups.tf:29-36
+	Calling File: /main.tf:1-9
+Check: CKV_AWS_24: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22"
+	FAILED for resource: module.network.aws_vpc_security_group_ingress_rule.juiceshop_ssh
+	File: /network/security_groups.tf:69-76
+	Calling File: /main.tf:1-9
+Check: CKV_AWS_24: "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22"
+	FAILED for resource: module.network.aws_vpc_security_group_ingress_rule.wazuh_ssh
+	File: /network/security_groups.tf:105-112
+	Calling File: /main.tf:1-9
+Check: CKV2_AWS_11: "Ensure VPC flow logging is enabled in all VPCs"
+	FAILED for resource: module.network.aws_vpc.main
+	File: /network/main.tf:13-19
+Check: CKV2_AWS_5: "Ensure that Security Groups are attached to another resource"
+	FAILED for resource: module.network.aws_security_group.waf
+	File: /network/security_groups.tf:6-11
+Check: CKV2_AWS_5: "Ensure that Security Groups are attached to another resource"
+	FAILED for resource: module.network.aws_security_group.juiceshop
+	File: /network/security_groups.tf:13-18
+Check: CKV2_AWS_5: "Ensure that Security Groups are attached to another resource"
+	FAILED for resource: module.network.aws_security_group.wazuh
+	File: /network/security_groups.tf:20-25
+

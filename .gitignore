@@ -1,0 +1,23 @@
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan
+crash.log
+terraform.tfvars
+backend.hcl
+.terraform.lock.hcl.bak
+
+# Secrets and keys
+*.pem
+*.key
+.env
+
+# Generated
+ansible/inventory.ini
+
+# OS / editors
+.DS_Store
+.vscode/
+.idea/
