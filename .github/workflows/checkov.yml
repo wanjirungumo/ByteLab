@@ -1,0 +1,48 @@
+# T09 — Checkov scan on every pull request
+# Scans the Terraform and Ansible code and posts the failed checks
+# in the run's summary page on GitHub (Actions tab → the run → Summary).
+#
+# soft-fail: for now the job stays green even with findings, because some
+# findings are accepted risks (e.g. port 80 open on the WAF). After T16,
+# remove --soft-fail so new findings turn the pull request red.
+
+name: Checkov
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch: # lets you run it by hand from the Actions tab
+
+permissions:
+  contents: read
+
+jobs:
+  checkov:
+    name: Scan Terraform and Ansible
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Checkov
+        run: pip install checkov==3.3.29
+
+      - name: Run Checkov
+        run: |
+          checkov -d . \
+            --framework terraform ansible \
+            --skip-download \
+            --soft-fail \
+            -o github_failed_only | tee checkov-results.md
+
+      - name: Show results on the run summary
+        if: always()
+        run: cat checkov-results.md >> "$GITHUB_STEP_SUMMARY"
