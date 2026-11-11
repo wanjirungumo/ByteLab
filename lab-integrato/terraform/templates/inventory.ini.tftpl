@@ -1,0 +1,24 @@
+# GENERATO da Terraform - non modificare, non committare.
+[waf]
+waf ansible_host=${waf_public_ip}
+
+[juice_shop]
+juice ansible_host=${juice_private}
+
+[wazuh]
+wazuh ansible_host=${wazuh_private}
+
+[private:children]
+juice_shop
+wazuh
+
+[all:vars]
+ansible_user=ubuntu
+ansible_ssh_private_key_file=${key_path}
+ansible_python_interpreter=/usr/bin/python3
+
+[waf:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+
+[private:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="ssh -i ${key_path} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -W %h:%p -q ubuntu@${waf_public_ip}"'

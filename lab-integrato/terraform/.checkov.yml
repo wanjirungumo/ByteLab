@@ -1,0 +1,11 @@
+# Uso: checkov --config-file .checkov.yml
+framework:
+  - terraform
+directory:
+  - .
+compact: true
+quiet: true
+skip-check:
+  # Lab didattico: motivazioni da riportare nel report Checkov.
+  - CKV2_AWS_11   # VPC Flow Logs: richiedono IAM role, non creabili nel Learner Lab
+  - CKV_AWS_126   # Detailed monitoring EC2: costo extra, inutile nel lab
