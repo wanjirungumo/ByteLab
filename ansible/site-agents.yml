@@ -1,0 +1,5 @@
+- name: Wazuh agents on WAF and Juice Shop
+  hosts: waf:juice_shop
+  become: true
+  roles:
+    - wazuh_agent
