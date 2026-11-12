@@ -1,0 +1,42 @@
+- name: Dipendenze base
+  ansible.builtin.apt:
+    name: [curl, tar, gnupg, apt-transport-https]
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Cartella di lavoro
+  ansible.builtin.file:
+    path: "{{ wazuh_install_dir }}"
+    state: directory
+    mode: "0700"
+
+- name: Scarica lo script di installazione
+  ansible.builtin.get_url:
+    url: "https://packages.wazuh.com/{{ wazuh_version }}/wazuh-install.sh"
+    dest: "{{ wazuh_install_dir }}/wazuh-install.sh"
+    mode: "0700"
+
+- name: Installa Wazuh all-in-one (indexer, server, dashboard)
+  ansible.builtin.command:
+    cmd: "bash wazuh-install.sh -a -i"
+    chdir: "{{ wazuh_install_dir }}"
+    creates: /var/ossec/bin/wazuh-control
+  async: 2400
+  poll: 30
+
+- name: Imposta la password admin da Terraform
+  ansible.builtin.command:
+    cmd: >-
+      bash /usr/share/wazuh-indexer/plugins/opensearch-security/tools/wazuh-passwords-tool.sh
+      -u {{ wazuh_admin_user }} -p {{ wazuh_admin_password }}
+  no_log: true
+  when: wazuh_admin_password is defined
+  changed_when: true
+
+- name: Servizi attivi e abilitati
+  ansible.builtin.service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop: [wazuh-indexer, wazuh-manager, wazuh-dashboard]
