@@ -1,0 +1,5 @@
+- name: WAF ModSecurity
+  hosts: waf
+  become: true
+  roles:
+    - modsecurity

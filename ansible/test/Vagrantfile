@@ -1,0 +1,36 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/ubuntu-24.04"
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.vm.synced_folder "..", "/ansible"
+
+  vms = {
+    "vm-waf"       => ["10.10.1.10", 1024],
+    "vm-juiceshop" => ["10.10.2.10", 2048],
+    "vm-wazuh"     => ["10.10.2.20", 4096],
+  }
+
+  vms.each do |name, (ip, mem)|
+    config.vm.define name do |m|
+      m.vm.hostname = name
+      # rete unica 10.10.0.0/16 per far comunicare le VM tra loro
+      m.vm.network "private_network", ip: ip, netmask: "255.255.0.0"
+      m.vm.provider "virtualbox" do |vb|
+        vb.name = name
+        vb.memory = mem
+        vb.cpus = 2
+      end
+      if name == "vm-juiceshop"
+        # sostituto di Matteo finche' il suo ruolo non e' pronto
+        m.vm.provision "shell", inline: "apt-get update -y && apt-get install -y docker.io && docker run -d --restart unless-stopped -p 3000:3000 bkimminich/juice-shop"
+      end
+      if name == "vm-waf"
+        # il ruolo gira dentro la VM: Ansible non serve su Windows
+        m.vm.provision "ansible_local" do |a|
+          a.provisioning_path = "/ansible"
+          a.playbook = "site-waf.yml"
+          a.groups = { "waf" => ["vm-waf"] }
+        end
+      end
+    end
+  end
+end

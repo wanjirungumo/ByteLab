@@ -1,0 +1,60 @@
+- name: Installa Apache, ModSecurity e OWASP CRS
+  ansible.builtin.apt:
+    name:
+      - apache2
+      - libapache2-mod-security2
+      - modsecurity-crs
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Crea modsecurity.conf dal file raccomandato
+  ansible.builtin.copy:
+    src: /etc/modsecurity/modsecurity.conf-recommended
+    dest: /etc/modsecurity/modsecurity.conf
+    remote_src: true
+    force: false
+  notify: Riavvia apache
+
+- name: Imposta SecRuleEngine
+  ansible.builtin.lineinfile:
+    path: /etc/modsecurity/modsecurity.conf
+    regexp: '^SecRuleEngine'
+    line: "SecRuleEngine {{ modsec_rule_engine }}"
+  notify: Riavvia apache
+
+- name: Abilita i moduli Apache necessari
+  ansible.builtin.command: "a2enmod {{ item }}"
+  args:
+    creates: "/etc/apache2/mods-enabled/{{ item }}.load"
+  loop: [proxy, proxy_http, headers, security2]
+  notify: Riavvia apache
+
+- name: Installa il virtual host reverse proxy
+  ansible.builtin.template:
+    src: waf-juiceshop.conf.j2
+    dest: /etc/apache2/sites-available/waf-juiceshop.conf
+    mode: "0644"
+  notify: Riavvia apache
+
+- name: Abilita il virtual host del WAF
+  ansible.builtin.command: a2ensite waf-juiceshop
+  args:
+    creates: /etc/apache2/sites-enabled/waf-juiceshop.conf
+  notify: Riavvia apache
+
+- name: Disabilita il sito di default
+  ansible.builtin.command: a2dissite 000-default
+  args:
+    removes: /etc/apache2/sites-enabled/000-default.conf
+  notify: Riavvia apache
+
+- name: Verifica la sintassi della configurazione
+  ansible.builtin.command: apache2ctl configtest
+  changed_when: false
+
+- name: Apache attivo e abilitato
+  ansible.builtin.service:
+    name: apache2
+    state: started
+    enabled: true

@@ -1,0 +1,8 @@
+<VirtualHost *:80>
+    ServerName vm-waf
+    ProxyPreserveHost On
+    ProxyPass / {{ modsec_backend_url }}
+    ProxyPassReverse / {{ modsec_backend_url }}
+    ErrorLog ${APACHE_LOG_DIR}/waf-error.log
+    CustomLog ${APACHE_LOG_DIR}/waf-access.log combined
+</VirtualHost>
