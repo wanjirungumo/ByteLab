@@ -1,2 +1,2 @@
-modsec_backend_url: "http://10.10.2.10:3000/"
-modsec_rule_engine: "On"
+modsec_backend_url: "http://{{ juice_shop_ip | default('10.10.2.10') }}:{{ juice_shop_port | default(3000) }}/"
+modsec_rule_engine: "{{ {'off': 'Off', 'detection': 'DetectionOnly', 'blocking': 'On'}[waf_mode | default('blocking')] }}"
