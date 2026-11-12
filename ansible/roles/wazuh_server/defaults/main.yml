@@ -1,0 +1,3 @@
+wazuh_version: "4.9"
+wazuh_install_dir: /opt/wazuh-install
+wazuh_admin_user: admin

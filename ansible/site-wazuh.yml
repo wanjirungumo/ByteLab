@@ -1,0 +1,5 @@
+- name: Wazuh server
+  hosts: wazuh
+  become: true
+  roles:
+    - wazuh_server
