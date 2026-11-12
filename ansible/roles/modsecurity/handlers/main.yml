@@ -1,0 +1,4 @@
+- name: Riavvia apache
+  ansible.builtin.service:
+    name: apache2
+    state: restarted

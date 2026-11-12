@@ -21,3 +21,5 @@ ansible/inventory.ini
 .DS_Store
 .vscode/
 .idea/
+
+ansible/test/.vagrant/
