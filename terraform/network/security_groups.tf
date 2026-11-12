@@ -27,6 +27,7 @@ resource "aws_security_group" "wazuh" {
 # --- WAF ---------------------------------------------------------------------
 
 resource "aws_vpc_security_group_ingress_rule" "waf_http" {
+    #checkov:skip=CKV_AWS_260:The WAF is the single public entry point; HTTP from the Internet is intentional
   security_group_id = aws_security_group.waf.id
   description       = "HTTP from the Internet (users and attackers)"
   cidr_ipv4         = "0.0.0.0/0"
@@ -67,6 +68,7 @@ resource "aws_vpc_security_group_ingress_rule" "juiceshop_app" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "juiceshop_ssh" {
+    #checkov:skip=CKV_AWS_24:SSH is allowed only from the WAF security group (jump host), not the Internet
   security_group_id            = aws_security_group.juiceshop.id
   description                  = "SSH via the WAF jump host"
   referenced_security_group_id = aws_security_group.waf.id
@@ -103,6 +105,7 @@ resource "aws_vpc_security_group_ingress_rule" "wazuh_dashboard" {
 }
 
 resource "aws_vpc_security_group_ingress_rule" "wazuh_ssh" {
+    #checkov:skip=CKV_AWS_24:SSH is allowed only from the WAF security group (jump host), not the Internet
   security_group_id            = aws_security_group.wazuh.id
   description                  = "SSH via the WAF jump host"
   referenced_security_group_id = aws_security_group.waf.id
