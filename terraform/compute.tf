@@ -1,4 +1,34 @@
 # ---------- Credenziali generate ----------
+locals {
+  juice_user_data = <<-EOF
+    #!/bin/bash
+    set -eux
+    until apt-get update; do sleep 5; done
+    apt-get install -y docker.io
+    systemctl enable --now docker
+    docker run -d --restart unless-stopped --name juice-shop -p ${var.juice_shop_port}:3000 bkimminich/juice-shop
+  EOF
+
+  waf_user_data = <<-EOF
+    #!/bin/bash
+    set -eux
+    until apt-get update; do sleep 5; done
+    apt-get install -y nginx
+    cat > /etc/nginx/sites-available/default <<'NGINX'
+    server {
+      listen 80 default_server;
+      location / {
+        proxy_pass http://${local.juice_ip}:${var.juice_shop_port};
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      }
+    }
+    NGINX
+    systemctl restart nginx
+  EOF
+}
+
 resource "tls_private_key" "lab" {
   algorithm = "ED25519"
 }
@@ -28,15 +58,17 @@ resource "random_password" "wazuh_admin" {
 
 # ---------- VM ----------
 resource "aws_instance" "waf" {
-  ami                    = data.aws_ami.ubuntu.id
-  instance_type          = var.waf_instance_type
-  subnet_id              = aws_subnet.public.id
-  private_ip             = local.waf_private_ip
-  vpc_security_group_ids = [aws_security_group.waf.id]
-  key_name               = aws_key_pair.lab.key_name
-  iam_instance_profile   = var.instance_profile_name
-  ebs_optimized          = true
-  monitoring             = false
+  ami                         = data.aws_ami.ubuntu.id
+  instance_type               = var.waf_instance_type
+  subnet_id                   = aws_subnet.public.id
+  private_ip                  = local.waf_private_ip
+  vpc_security_group_ids      = [aws_security_group.waf.id]
+  key_name                    = aws_key_pair.lab.key_name
+  iam_instance_profile        = var.instance_profile_name
+  ebs_optimized               = true
+  monitoring                  = false
+  user_data                   = replace(local.waf_user_data, "\r", "")
+  user_data_replace_on_change = true
 
   metadata_options {
     http_endpoint = "enabled"
@@ -60,15 +92,17 @@ resource "aws_instance" "waf" {
 }
 
 resource "aws_instance" "juice" {
-  ami                    = data.aws_ami.ubuntu.id
-  instance_type          = var.juice_instance_type
-  subnet_id              = aws_subnet.private.id
-  private_ip             = local.juice_ip
-  vpc_security_group_ids = [aws_security_group.juice.id]
-  key_name               = aws_key_pair.lab.key_name
-  iam_instance_profile   = var.instance_profile_name
-  ebs_optimized          = true
-  monitoring             = false
+  ami                         = data.aws_ami.ubuntu.id
+  instance_type               = var.juice_instance_type
+  subnet_id                   = aws_subnet.private.id
+  private_ip                  = local.juice_ip
+  vpc_security_group_ids      = [aws_security_group.juice.id]
+  key_name                    = aws_key_pair.lab.key_name
+  iam_instance_profile        = var.instance_profile_name
+  ebs_optimized               = true
+  monitoring                  = false
+  user_data                   = replace(local.juice_user_data, "\r", "")
+  user_data_replace_on_change = true
 
   metadata_options {
     http_endpoint = "enabled"
