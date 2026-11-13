@@ -1,3 +1,3 @@
 ---
 wazuh_version: "4.9"
-wazuh_manager_ip: "10.0.2.20"   # overridden by Terraform's generated vars at deploy
+wazuh_manager_ip: "10.10.2.20"   # overridden by Terraform's generated vars at deploy
