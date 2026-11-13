@@ -72,7 +72,7 @@ Role: `ansible/roles/modsecurity`, playbook `ansible/site-waf.yml`.
 | Variable | Default | Meaning |
 | --- | --- | --- |
 | `modsec_backend_url` | `http://10.10.2.10:3000/` | Backend the WAF proxies to (built from `juice_shop_ip` and `juice_shop_port`) |
-| `waf_mode` | `blocking` | `off` = Off, `detection` = DetectionOnly, `blocking` = On |
+| `waf_mode` | `off` | `off` = Off, `detection` = DetectionOnly, `blocking` = On |
 
 `waf_mode` allows the offence-to-defence phases of the lab: start with `off`, then `detection` (attacks are logged but pass), then `blocking` (attacks get a 403).
 
@@ -100,6 +100,7 @@ Roles: `ansible/roles/wazuh_server` (playbook `ansible/site-wazuh.yml`) and `ans
 | Variable | Default | Meaning |
 | --- | --- | --- |
 | `wazuh_version` | `4.9` | Wazuh version installed |
+| `wazuh_agent_version` | `4.9.2` | Exact agent package version; must not be newer than the manager |
 | `wazuh_install_dir` | `/opt/wazuh-install` | Installer working directory and generated credentials |
 | `wazuh_admin_user` | `admin` | Dashboard user |
 | `wazuh_manager_ip` | `10.10.2.20` | Manager address used by the agents (overridden by Terraform's generated variables) |

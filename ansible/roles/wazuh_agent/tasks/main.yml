@@ -18,19 +18,47 @@
     filename: wazuh
     state: present
 
-- name: Install the Wazuh agent (pointed at the manager)
+# The agent must never be newer than the manager, or enrolment is rejected.
+- name: Install the Wazuh agent pinned to the manager version
   ansible.builtin.apt:
     name: "wazuh-agent={{ wazuh_agent_version }}"
     state: present
     update_cache: true
+    allow_downgrade: true
+    allow_change_held_packages: true
   environment:
     WAZUH_MANAGER: "{{ wazuh_manager_ip }}"
+    DEBIAN_FRONTEND: noninteractive
+    NEEDRESTART_MODE: a
+
+- name: Hold the agent so apt upgrades cannot move it past the manager
+  ansible.builtin.dpkg_selections:
+    name: wazuh-agent
+    selection: hold
 
 - name: Set the manager address in the agent config
   ansible.builtin.lineinfile:
     path: /var/ossec/etc/ossec.conf
     regexp: '<address>.*</address>'
     line: "      <address>{{ wazuh_manager_ip }}</address>"
+  notify: Restart wazuh-agent
+
+- name: Monitor the WAF vhost logs (ModSecurity alerts)
+  ansible.builtin.blockinfile:
+    path: /var/ossec/etc/ossec.conf
+    marker: "<!-- {mark} BYTELAB WAF LOGS -->"
+    block: |
+      <ossec_config>
+        <localfile>
+          <log_format>apache</log_format>
+          <location>/var/log/apache2/waf-access.log</location>
+        </localfile>
+        <localfile>
+          <log_format>apache</log_format>
+          <location>/var/log/apache2/waf-error.log</location>
+        </localfile>
+      </ossec_config>
+  when: "'waf' in group_names"
   notify: Restart wazuh-agent
 
 - name: Enable and start the agent
