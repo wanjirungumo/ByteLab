@@ -21,7 +21,7 @@
 # The agent must never be newer than the manager, or enrolment is rejected.
 - name: Install the Wazuh agent pinned to the manager version
   ansible.builtin.apt:
-    name: "wazuh-agent={{ wazuh_agent_version }}-1"
+    name: "wazuh-agent={{ wazuh_agent_version }}"
     state: present
     update_cache: true
     allow_downgrade: true

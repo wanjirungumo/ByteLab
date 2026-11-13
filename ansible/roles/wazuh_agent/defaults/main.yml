@@ -1,3 +1,5 @@
 ---
-wazuh_agent_version: "4.9.2"   # exact package; must never be newer than the manager
+wazuh_version: "4.9"
 wazuh_manager_ip: "10.10.2.20"   # overridden by Terraform's generated vars at deploy
+
+wazuh_agent_version: "4.9.2-1"
