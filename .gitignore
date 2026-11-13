@@ -23,3 +23,7 @@ ansible/inventory.ini
 .idea/
 
 ansible/test/.vagrant/
+terraform/ansible/group_vars/all/terraform_generated.yml
+*.tfstate.*
+.terraform/
+terraform/ansible/
