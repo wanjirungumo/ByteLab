@@ -72,7 +72,7 @@ Role: `ansible/roles/modsecurity`, playbook `ansible/site-waf.yml`.
 | Variable | Default | Meaning |
 | --- | --- | --- |
 | `modsec_backend_url` | `http://10.10.2.10:3000/` | Backend the WAF proxies to (built from `juice_shop_ip` and `juice_shop_port`) |
-| `waf_mode` | `blocking` | `off` = Off, `detection` = DetectionOnly, `blocking` = On |
+| `waf_mode` | `off` | `off` = Off, `detection` = DetectionOnly, `blocking` = On |
 
 `waf_mode` allows the offence-to-defence phases of the lab: start with `off`, then `detection` (attacks are logged but pass), then `blocking` (attacks get a 403).
 
