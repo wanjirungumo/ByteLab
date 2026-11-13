@@ -20,7 +20,7 @@
 
 - name: Install the Wazuh agent (pointed at the manager)
   ansible.builtin.apt:
-    name: wazuh-agent
+    name: "wazuh-agent={{ wazuh_agent_version }}"
     state: present
     update_cache: true
   environment:
