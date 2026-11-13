@@ -2,7 +2,7 @@
 
 Data: 13/11/2026
 Ambiente: EC2 di test (Ubuntu 24.04, t3.small), VPC di default, Juice Shop in Docker sulla stessa istanza.
-Ruolo testato: `ansible/roles/modsecurity` (playbook `site-waf.yml`), branch `main`.
+Ruolo testato: `ansible/roles/modsecurity` (playbook `site-waf.yml`), branch `main`. Modalità: `waf_mode=blocking` (il default attuale è `off`, vedi `docs/client-documentation.md`).
 
 ## Risultati
 
