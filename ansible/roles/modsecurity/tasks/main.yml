@@ -8,6 +8,15 @@
     update_cache: true
     cache_valid_time: 3600
 
+- name: Collega le regole OWASP CRS a ModSecurity (owasp-crs.load)
+  ansible.builtin.copy:
+    dest: /usr/share/modsecurity-crs/owasp-crs.load
+    content: |
+      IncludeOptional /etc/modsecurity/crs/crs-setup.conf
+      IncludeOptional /usr/share/modsecurity-crs/rules/*.conf
+    mode: "0644"
+  notify: Riavvia apache
+
 - name: Crea modsecurity.conf dal file raccomandato
   ansible.builtin.copy:
     src: /etc/modsecurity/modsecurity.conf-recommended
